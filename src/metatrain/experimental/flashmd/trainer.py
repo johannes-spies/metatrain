@@ -166,10 +166,22 @@ class Trainer(TrainerInterface[TrainerHypers, ModelHypers]):
         self._stale_finetune_targets = compute_stale_targets(
             model.dataset_info.targets, dataset_info.targets
         )
-        model.restart(dataset_info, model_hypers=model_hypers)
-        # ``MetatrainModel.restart`` only restarts the composition model
-        model.additive_models[1] = model.additive_models[1].restart(
-            _position_additive_dataset_info(dataset_info)
+        comp_model_info = DatasetInfo(
+            length_unit=dataset_info.length_unit,
+            atomic_types=dataset_info.atomic_types,
+            targets={
+                target_name: target_info
+                for target_name, target_info in dataset_info.targets.items()
+                if model.additive_models[0].is_valid_target(target_name, target_info)
+            },
+        )
+        model.restart(
+            dataset_info,
+            additive_models_dataset_info=[
+                comp_model_info,
+                _position_additive_dataset_info(dataset_info),
+            ],
+            model_hypers=model_hypers,
         )
         return model
 
