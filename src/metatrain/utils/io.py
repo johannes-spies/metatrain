@@ -277,6 +277,7 @@ _mtt_model_versions = {
     "experimental.dpa3": 4,
     "experimental.space": 4,
     "experimental.flashmd": 6,
+    "experimental.flashmd_symplectic": 4,
 }
 
 
